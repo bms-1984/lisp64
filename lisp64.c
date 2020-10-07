@@ -590,28 +590,26 @@ lval *builtin_le(lenv *e, lval *a) {
 }
 
 lval *builtin_load(lenv *e, lval *a) {
-  LASSERT_NUM("load", a, 1);
-  LASSERT_TYPE("load", a, 0, LVAL_STR);
-  mpc_result_t r;
-  if (mpc_parse_contents(a->value.cell[0]->value.str, Lisp64, &r)) {
-    lval *expr = lval_read(r.output);
-    mpc_ast_delete(r.output);
-    while (expr->count) {
-      lval *x = lval_eval(e, lval_pop(expr, 0));
-      if (x->type == LVAL_ERR) { lval_println(x); }
-      lval_del(x);
-    }
-    lval_del(expr);
-    lval_del(a);
-    return lval_sexp();
-  } else {
-    char *err_msg = mpc_err_string(r.error);
-    mpc_err_delete(r.error);
-    lval *err = lval_err("Could not load Library %s", err_msg);
-    free(err_msg);
-    lval_del(a);
-    return err;
+  FILE *f = fopen(a->value.cell[0]->value.str, "r");
+  if (f == NULL) {
+    return lval_err("file failire\n");
   }
+  mpc_result_t r;
+  if (mpc_parse_file(a->value.cell[0]->value.str, f, Lisp64, &r)) { 
+    lval *x = lval_read(r.output);
+    mpc_ast_delete(r.output);
+    while (x->count) {
+      lval *y = lval_eval(e, lval_pop(x, 0));
+      if (y->type == LVAL_ERR) { lval_println(y); }
+      lval_del(y);
+    }
+    lval_del(x);    
+  } else {
+    mpc_err_print(r.error);
+    mpc_err_delete(r.error);
+  } 
+  fclose(f);
+  return lval_sexp();
 }
 
 lval *builtin_print(lenv *e, lval *a) {
@@ -651,7 +649,7 @@ lval *builtin_var(lenv *e, lval *a, char *func) {
     if (strcmp(func, "define") == 0) {
       lenv_def(e, syms->value.cell[i], a->value.cell[i+1]);
     }
-    if (strcmp(func, "let")   == 0) {
+    if (strcmp(func, "set")   == 0) {
       lenv_put(e, syms->value.cell[i], a->value.cell[i+1]);
     }
   }
@@ -684,8 +682,8 @@ lval *builtin_cond(lenv *e, lval *a) {
   return builtin_condn(e, a->value.cell[0], a->value.cell[1], a->value.cell[2]);
 }
 
-lval *builtin_let(lenv *e, lval *a) {
-  return builtin_var(e, a, "let");
+lval *builtin_set(lenv *e, lval *a) {
+  return builtin_var(e, a, "set");
 }
 
 lval *lval_call(lenv *e, lval *f, lval *a) {
@@ -814,7 +812,7 @@ void lenv_add_builtins(lenv *e) {
   lenv_add_builtin(e, "%", builtin_mod);
   lenv_add_builtin(e, "^", builtin_pow);
   lenv_add_builtin(e, "lambda", builtin_lambda);
-  lenv_add_builtin(e, "let", builtin_let);
+  lenv_add_builtin(e, "set", builtin_set);
   lenv_add_builtin(e, ">", builtin_gt);
   lenv_add_builtin(e, ">=", builtin_ge);
   lenv_add_builtin(e, "=", builtin_eq);
@@ -899,17 +897,17 @@ lval *builtin_op(lenv *e, lval *a, char *op) {
 }
 
 int main(int argc, char **argv) {
-  mpc_parser_t *Comment  = mpc_new("comment");
-  mpc_parser_t *String   = mpc_new("string");
-  mpc_parser_t *Boolean  = mpc_new("boolean");
-  mpc_parser_t *Number   = mpc_new("number");
-  mpc_parser_t *Double   = mpc_new("double");
-  mpc_parser_t *Long     = mpc_new("long");
-  mpc_parser_t *Symbol   = mpc_new("symbol");
-  mpc_parser_t *Expr     = mpc_new("expr");
-  mpc_parser_t *Sexp     = mpc_new("sexp");
-  mpc_parser_t *Qexp     = mpc_new("qexp");
-  mpc_parser_t *Lisp64   = mpc_new("lisp64");
+  Comment  = mpc_new("comment");
+  String   = mpc_new("string");
+  Boolean  = mpc_new("boolean");
+  Number   = mpc_new("number");
+  Double   = mpc_new("double");
+  Long     = mpc_new("long");
+  Symbol   = mpc_new("symbol");
+  Expr     = mpc_new("expr");
+  Sexp     = mpc_new("sexp");
+  Qexp     = mpc_new("qexp");
+  Lisp64   = mpc_new("lisp64");
   
   mpca_lang(MPCA_LANG_DEFAULT,
 	    "                                                     \
@@ -929,22 +927,12 @@ int main(int argc, char **argv) {
   lenv_add_builtins(e);
   
   if (argc > 1) {
-    FILE *f = fopen(argv[1], "r");
-    if (f == NULL) {
-      perror("file failure\n");
-      return 1;
-    }
-    mpc_result_t r;
-    if (mpc_parse_file("test.lisp", f, Lisp64, &r)) { 
-      lval *x = lval_eval(e, lval_read(r.output));
-      lval_println(x);
+    for (int i = 1; i < argc; i++) {
+      lval *args = lval_add(lval_sexp(), lval_str(argv[i]));
+      lval *x = builtin_load(e, args);
+      if (x->type == LVAL_ERR) { lval_println(x); }
       lval_del(x);
-      mpc_ast_delete(r.output);
-    } else {
-      mpc_err_print(r.error);
-      mpc_err_delete(r.error);
-    } 
-    fclose(f);
+    }
   } else {
     char *buffer;
     size_t bufsize = 50;

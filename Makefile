@@ -15,7 +15,7 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 lisp64: lisp64.c mpc.c
-	$(CC) -Wall $^ -lm -o $@
+	$(CC) -g -Wall $^ -lm -o $@
 
 .PHONY: clean
 
