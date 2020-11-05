@@ -21,7 +21,7 @@ SRCFILES	:= $(shell find . -type f -name "*.c")
 AUXFILES	:= LICENSE Makefile lib.lisp mpc.h
 ALLFILES	:= $(SRCFILES) $(ALLFILES)
 VERSION		:= 0.1.0
-DISTFILE	:= $(TARGET)-$(VERSION).tar.gz
+DISTFILE	:= $(TARGET)-$(VERSION).tar.xz
 CLEANFILES	:= $(TARGET) $(DISTFILE)
 
 .PHONY: clean dist
