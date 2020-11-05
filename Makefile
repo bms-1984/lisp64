@@ -19,7 +19,7 @@ LIBS		:= -lm
 TARGET		:= liz
 SRCFILES	:= $(shell find . -type f -name "*.c")
 AUXFILES	:= LICENSE Makefile lib.lisp mpc.h
-ALLFILES	:= $(SRCFILES) $(ALLFILES)
+ALLFILES	:= $(SRCFILES) $(AUXFILES)
 VERSION		:= 0.1.0
 DISTFILE	:= $(TARGET)-$(VERSION).tar.xz
 CLEANFILES	:= $(TARGET) $(DISTFILE)
@@ -35,5 +35,8 @@ clean:
 	@echo All clean!
 
 dist:
-	@tar cJf $(DISTFILE) $(ALLFILES)
+	@mkdir $(TARGET)-$(VERSION)
+	cp -R $(wildcard $(ALLFILES)) $(TARGET)-$(VERSION)
+	@tar cJf $(DISTFILE) $(TARGET)-$(VERSION)
+	@$(RM) -rf $(TARGET)-$(VERSION)
 	@echo All packed!
