@@ -14,10 +14,26 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-lisp64: lisp64.c mpc.c
-	$(CC) -g -Wall $^ -lm -o $@
+CFLAGS		?= -g -Wall
+LIBS		:= -lm
+TARGET		:= liz
+SRCFILES	:= $(shell find . -type f -name "*.c")
+AUXFILES	:= LICENSE Makefile lib.lisp mpc.h
+ALLFILES	:= $(SRCFILES) $(ALLFILES)
+VERSION		:= 0.1.0
+DISTFILE	:= $(TARGET)-$(VERSION).tar.gz
+CLEANFILES	:= $(TARGET) $(DISTFILE)
 
-.PHONY: clean
+.PHONY: clean dist
+
+$(TARGET): $(SRCFILES)
+	@$(CC) $(CFLAGS) $^ -o $@ -D VERSION=\"$(VERSION)\" $(LIBS)
+	@echo All done!
 
 clean:
-	rm -f lisp64 *~
+	@$(RM) -rf $(wildcard $(CLEANFILES))
+	@echo All clean!
+
+dist:
+	@tar cJf $(DISTFILE) $(ALLFILES)
+	@echo All packed!

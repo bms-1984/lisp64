@@ -1,5 +1,5 @@
 /*
-    Lisp64 is a custom Lisp implementation.
+    Liz is a custom Lisp implementation.
     Copyright (C) 2020 Ben M. Sutter
 
     This program is free software: you can redistribute it and/or modify
@@ -942,8 +942,8 @@ int main(int argc, char **argv) {
 	perror("unable to allocate buffer");
 	exit(1);
       }
-    printf("lisp64 v0.1\n");
-    printf("lisp64 Copyright (C) 2020 Ben M. Sutter\nThis program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.\nThis is free software, and you are welcome to redistribute it\nunder certain conditions; type `show c' for details.\n");
+    printf("liz %s\n", VERSION);
+    printf("liz Copyright (C) 2020 Ben M. Sutter\nThis program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.\nThis is free software, and you are welcome to redistribute it\nunder certain conditions; type `show c' for details.\n");
     while (1) {
       printf("> ");
       getline(&buffer, &bufsize, stdin);
