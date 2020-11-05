@@ -36,7 +36,7 @@ clean:
 
 dist:
 	@mkdir $(TARGET)-$(VERSION)
-	cp -R $(wildcard $(ALLFILES)) $(TARGET)-$(VERSION)
+	@cp -R $(wildcard $(ALLFILES)) $(TARGET)-$(VERSION)
 	@tar cJf $(DISTFILE) $(TARGET)-$(VERSION)
 	@$(RM) -rf $(TARGET)-$(VERSION)
 	@echo All packed!
