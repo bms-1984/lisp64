@@ -14,10 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-WARNINGS     	?= -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
-	           -Wwrite-strings -Wmissing-prototypes -Wmissing-declarations   \
-                   -Wredundant-decls -Wnested-externs -Winline -Wno-long-long    \
-                   -Wconversion -Wstrict-prototypes
+WARNINGS     	?= -Wall -pedantic
 DEBUG		?= -g
 CFLAGS		:= $(WARNINGS) $(DEBUG) -MMD -MP
 LIBS		:= -lm
