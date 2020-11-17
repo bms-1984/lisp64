@@ -1,4 +1,4 @@
-#    Lisp64 is a custom Lisp implementation.
+#    Liz is a custom Lisp implementation.
 #    Copyright (C) 2020 Ben M. Sutter
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -14,29 +14,40 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-CFLAGS		?= -g -Wall
+WARNINGS     	?= -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
+	           -Wwrite-strings -Wmissing-prototypes -Wmissing-declarations   \
+                   -Wredundant-decls -Wnested-externs -Winline -Wno-long-long    \
+                   -Wconversion -Wstrict-prototypes
+DEBUG		?= -g
+CFLAGS		:= $(WARNINGS) $(DEBUG) -MMD -MP
 LIBS		:= -lm
-TARGET		:= liz
-SRCFILES	:= $(shell find . -type f -name "*.c")
-AUXFILES	:= LICENSE Makefile lib.lisp mpc.h
-ALLFILES	:= $(SRCFILES) $(AUXFILES)
+
 VERSION		:= 0.1.0
+TARGET		:= liz
+
+SRCFILES	:= $(shell find . -type f -name "*.c")
+HDRFILES    	:= $(shell find . -type f -name "*.h")
+DEPFILES	:= $(SRCFILES:.c=.d)
+AUXFILES	:= LICENSE Makefile lib.lisp
+ALLFILES	:= $(SRCFILES) $(AUXFILES) $(HDRFILES)
 DISTFILE	:= $(TARGET)-$(VERSION).tar.xz
-CLEANFILES	:= $(TARGET) $(DISTFILE)
+CLEANFILES	:= $(TARGET) $(DISTFILE) $(DEPFILES)
+
+-include $(DEPFILES)
 
 .PHONY: clean dist
 
 $(TARGET): $(SRCFILES)
 	@$(CC) $(CFLAGS) $^ -o $@ -D VERSION=\"$(VERSION)\" $(LIBS)
-	@echo All done!
+	$(info All done!)
 
 clean:
 	@$(RM) -rf $(wildcard $(CLEANFILES))
-	@echo All clean!
+	$(info All clean!)
 
 dist:
 	@mkdir $(TARGET)-$(VERSION)
 	@cp -R $(wildcard $(ALLFILES)) $(TARGET)-$(VERSION)
 	@tar cJf $(DISTFILE) $(TARGET)-$(VERSION)
 	@$(RM) -rf $(TARGET)-$(VERSION)
-	@echo All packed!
+	$(info All packed!)
