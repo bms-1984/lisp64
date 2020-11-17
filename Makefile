@@ -19,13 +19,13 @@ DEBUG		?= -g
 CFLAGS		:= $(WARNINGS) $(DEBUG) -MMD -MP
 LIBS		:= -lm
 
-VERSION		:= 0.1.0
+VERSION		:= 0.2.0
 TARGET		:= liz
 
 SRCFILES	:= $(shell find . -type f -name "*.c")
 HDRFILES    	:= $(shell find . -type f -name "*.h")
 DEPFILES	:= $(SRCFILES:.c=.d)
-AUXFILES	:= LICENSE Makefile lib.lisp
+AUXFILES	:= LICENSE Makefile lib.lisp README
 ALLFILES	:= $(SRCFILES) $(AUXFILES) $(HDRFILES)
 DISTFILE	:= $(TARGET)-$(VERSION).tar.xz
 CLEANFILES	:= $(TARGET) $(DISTFILE) $(DEPFILES) $(shell find . -type f -name "*~")
