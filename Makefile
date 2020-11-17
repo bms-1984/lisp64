@@ -31,7 +31,7 @@ DEPFILES	:= $(SRCFILES:.c=.d)
 AUXFILES	:= LICENSE Makefile lib.lisp
 ALLFILES	:= $(SRCFILES) $(AUXFILES) $(HDRFILES)
 DISTFILE	:= $(TARGET)-$(VERSION).tar.xz
-CLEANFILES	:= $(TARGET) $(DISTFILE) $(DEPFILES)
+CLEANFILES	:= $(TARGET) $(DISTFILE) $(DEPFILES) $(shell find . -type f -name "*~")
 
 -include $(DEPFILES)
 
