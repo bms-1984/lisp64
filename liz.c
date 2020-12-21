@@ -945,7 +945,7 @@ int main(int argc, char **argv) {
     printf("liz %s\n", VERSION);
     printf("liz Copyright (C) 2020 Ben M. Sutter\nThis program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.\nThis is free software, and you are welcome to redistribute it\nunder certain conditions; type `show c' for details.\n");
     while (1) {
-      printf("> ");
+      printf(":>\t");
       getline(&buffer, &bufsize, stdin);
       if (strstr(buffer, ";quit")) break;
       mpc_result_t r;

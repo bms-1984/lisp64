@@ -43,8 +43,9 @@ clean:
 	$(info All clean!)
 
 dist:
-	@mkdir $(TARGET)-$(VERSION)
+	@mkdir -p $(TARGET)-$(VERSION)
 	@cp -R $(wildcard $(ALLFILES)) $(TARGET)-$(VERSION)
+	@sed -e "s@-g@@" $(TARGET)-$(VERSION)/Makefile -i
 	@tar cJf $(DISTFILE) $(TARGET)-$(VERSION)
 	@$(RM) -rf $(TARGET)-$(VERSION)
 	$(info All packed!)
